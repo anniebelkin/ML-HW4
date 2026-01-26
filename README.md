@@ -1,8 +1,8 @@
-# Assignment 4: Flower Classification with Pretrained CNNs
+# Flower Classification with Pretrained CNNs
 
 These notebooks use VGG19 and YOLOv5 to classify flower types from the Oxford Flowers-102 dataset.
 
-link to YOLOv5 notebook: https://colab.research.google.com/drive/1DFq5kMwIERNwta_y-5fP0SMzuT9t2I_a?usp=sharing
+[YOLOv5 colab notebook link](https://colab.research.google.com/drive/1RdoSitloXBsuMJMJRj4gJ9CMuGvUFAbI)
 
 ## Assignment Requirements Checklist
 
@@ -124,3 +124,4 @@ This section shows the YOLOv5s-cls classification results. It includes the train
 ---
 
 ## VGG19 notebook description
+
