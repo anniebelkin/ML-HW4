@@ -3,6 +3,7 @@
 These notebooks use VGG19 and YOLOv5 to classify flower types from the Oxford Flowers-102 dataset.
 
 [YOLOv5 colab notebook link](https://colab.research.google.com/drive/1RdoSitloXBsuMJMJRj4gJ9CMuGvUFAbI)
+[VGG19 colab notebook link](https://colab.research.google.com/drive/1Pla7ZPSjTqdvKTGmMd9lpKiHF_fWHAXc)
 
 ## Assignment Requirements Checklist
 
@@ -28,14 +29,14 @@ These notebooks use VGG19 and YOLOv5 to classify flower types from the Oxford Fl
 
 ✅ **7. Preprocessing Details**: Detailed description provided in dedicated section below
 
-✅ **8. Network Architecture**: Detailed layer-by-layer descriptions provided for both VGG19 and YOLOv5
+✅ **8. Network Architecture**: Detailed architecture descriptions provided for both VGG19 and YOLOv5
 
 ✅ **9. Visualization**:
    - Accuracy graphs (train/val/test) vs epochs
    - Cross-Entropy loss graphs (train/val/test) vs epochs
    - Generated for all models and both random splits
 
-✅ **10. Accuracy Target**: Both VGG19 and YOLOv5s-cls typically achieves >70% test accuracy on Flowers-102
+✅ **10. Accuracy Target**: Both VGG19 and YOLOv5s-cls typically achieve >70% test accuracy on Flowers-102
 
 ### Probabilistic Outputs
 Both models produce probabilistic outputs using **softmax** function on final logits, providing probability distributions over all 102 flower classes.
@@ -56,7 +57,7 @@ A. Physical Data Organization (prepare_dataset function):
    3. Repetition: To ensure robustness, we repeated the entire splitting and training process twice using different random seeds.
                   This created two completely different random arrangements of the data to verify that the model's accuracy is stable and not due to a lucky split.
    4. Restructuring: Copies images into class-specific folders (required by PyTorch ImageFolder):
-      datasets/flowers102_<run_name>/[train|val|test]/[class_id]/image.jpg
+      datasets/flowers102_<run_name>/[train|val|test]/[class_id]/image.jpg (where `<run_name>` is `run1` or `run2`)
 
 B. Input Transformation (On-the-Fly transforms):
    1. Training (Augmentation):
@@ -129,15 +130,15 @@ This section shows the YOLOv5s-cls classification results. It includes the train
 
 #### Preprocessing of the Input Images
 
-All images are resized to 224×224 pixels to match the VGG19 input size. During training, random horizontal flipping is applied as data augmentation. Images are converted to tensors and normalized using ImageNet mean and standard deviation values. The dataset is split into training, validation, and test sets using stratified sampling to preserve class distributions.
+All images are resized to 224×224 pixels to match the VGG19 input size. During training, we apply common data augmentation (random horizontal flipping, random rotation, and color jitter). Images are converted to tensors and normalized using ImageNet mean and standard deviation values. The dataset is split into training, validation, and test sets using stratified sampling to preserve class distributions.
 
 ### Detailed Network Description (VGG19)
 
-The model is based on VGG19, a 19-layer deep convolutional neural network pretrained on the ImageNet dataset (1,000 classes). Transfer learning is applied by freezing the pretrained feature extraction layers and training only the final classification layer for the Flowers-102 task.
+The model is based on **VGG19**, a 19-layer deep convolutional neural network pretrained on the ImageNet dataset (1,000 classes). Transfer learning is applied by freezing the pretrained feature extraction layers and training the classifier for the Flowers-102 task.
 
 #### Feature Extraction Layers (Frozen – Pretrained on ImageNet)
 
-The feature extractor consists of five convolutional blocks, each using 3×3 convolutional filters with ReLU activation, followed by max-pooling layers:
+The feature extractor consists of **five convolutional blocks**, each using 3×3 convolutional filters with ReLU activation, followed by max-pooling layers:
 
 **Block 1**
 * Conv2D (64 filters, 3×3, ReLU)
@@ -165,16 +166,16 @@ In total, the network contains 16 convolutional layers, all of which are frozen 
 
 **Classifier Layers**
 
-The original VGG19 classifier is partially retained and adapted for the Flowers-102 dataset:
-1. Linear (25088 → 4096) + ReLU + Dropout (0.5) — Frozen
-2. Linear (4096 → 4096) + ReLU + Dropout (0.5) — Frozen
-3. Linear (4096 → 102) — Trainable
+The VGG19 classifier is retained and adapted for the Flowers-102 dataset:
+1. Linear (25088 → 4096) + ReLU + Dropout (0.5)
+2. Linear (4096 → 4096) + ReLU + Dropout (0.5)
+3. Linear (4096 → 102)
 
-The final fully connected layer is replaced to output layer for the 102 flower classes.
+The final fully connected layer is replaced with a layer that outputs 102 flower classes.
 
 #### Transfer Learning Strategy
-* **Frozen layers**: All convolutional layers and the first two fully connected layers
-* **Trainable layers**: Only the final classification layer
+* **Frozen layers**: All convolutional layers
+* **Trainable layers**: Classifier layers
 * **Output**: 102 class logits, converted to probabilities using the softmax function during inference
 
 This strategy preserves pretrained visual representations while adapting the model efficiently to the target classification task.
@@ -194,7 +195,7 @@ This strategy preserves pretrained visual representations while adapting the mod
   * Weight decay (L2)
 
 ### Results
-Training and validation performance of the VGG19 model under two different random seeds (seed = 123 and seed = 42). The left panels show the cross-entropy loss over 50 training epochs, and the right panels show the corresponding accuracy curves. Blue lines represent training performance, orange lines represent validation performance and the red dashed line indicates the final test set result.
+Training and validation performance of the VGG19 model under two different random seeds (seed = 123 and seed = 42). The left panels show the cross-entropy loss over 50 training epochs, and the right panels show the corresponding accuracy curves. Blue lines represent training performance, orange lines represent validation performance, and red lines represent test performance.
 
 **Full run outputs:**
 - Run 1 (seed 42): [results/vgg19/run1.pdf](results/vgg19/run1.pdf)
@@ -203,25 +204,21 @@ Training and validation performance of the VGG19 model under two different rando
 #### Run 1 (Seed 42)
 ![VGG19 Run 1 training curves](results/vgg19/run1.png)
 
-**Figure (Run 1 curves):** The training and validation curves for the VGG19 model with random seed 42 show stable convergence over 50 epochs. Cross-entropy loss decreases overall for both training and validation, with small fluctuations in later epochs; accuracy rises quickly early on and then largely plateaus with minor oscillations. The gap between training and validation stays relatively small, suggesting limited overfitting and good generalization performance.
+**Figure (Run 1 curves):** The training, validation, and test curves for the VGG19 model with random seed 42 show stable convergence over 50 epochs. Cross-entropy loss decreases overall on all three splits (train/val/test), and the validation and test losses track each other closely with small late-epoch fluctuations. Accuracy rises quickly early on and then largely plateaus; the test accuracy curve stays close to validation throughout training (sometimes slightly above/below), which suggests the model is not overfitting heavily.
 
-By Epoch 50 the model reaches: 
+By Epoch 50 the model reaches: **Train Acc = 0.8117**, **Val Acc = 0.8017**, **Test Acc = 0.8062**.
 
-**Train Acc = 0.8117**, **Val Acc = 0.8017**, **Test Acc = 0.8062**.
-
-The final validation accuracy closely matches the final test accuracy (red dashed line), suggesting that the validation performance is a reliable indicator of generalization. Overall, the model exhibits stable learning dynamics and robust performance under this initialization.
+Across epochs, the validation and test accuracy curves remain close, indicating that validation performance is a reliable indicator of generalization. Overall, the model exhibits stable learning dynamics and robust performance under this initialization.
 
 #### Run 2 (Seed 123)
 ![VGG19 Run 2 training curves](results/vgg19/run2.png)
 
-**Figure (Run 2 curves):** For the model trained with random seed 123, a similar convergence pattern is observed. Both training and validation loss decrease overall (not strictly monotonically), and accuracy increases early on and then levels off with small fluctuations.
+**Figure (Run 2 curves):** For the model trained with random seed 123, a very similar pattern is observed when considering train/val/test per epoch. Loss decreases overall across all three splits, and the validation and test loss curves remain close over training. Accuracy improves rapidly in early epochs and then levels off; the test accuracy curve closely follows validation with minor oscillations, indicating consistent generalization behavior.
 
-By Epoch 50 the model reaches: 
-
-**Train Acc = 0.8175**, **Val Acc = 0.8036**, **Test Acc = 0.8042**.
+By Epoch 50 the model reaches: **Train Acc = 0.8175**, **Val Acc = 0.8036**, **Test Acc = 0.8042**.
 
 Slight variations appear in the early training phase compared to seed 42, mainly in the rate of improvement; however, the final performance remains comparable.
-As with the previous run, the final validation accuracy aligns closely with the final test accuracy, demonstrating consistent generalization behavior. These results confirm that the model’s performance is reproducible and not strongly dependent on the choice of random seed.
+As with the previous run, the validation and test curves remain close across epochs and the final validation accuracy aligns closely with the final test accuracy, demonstrating consistent generalization behavior. These results confirm that the model’s performance is reproducible and not strongly dependent on the choice of random seed.
 
 #### Probabilistic Output (Random Prediction Simulations)
 ![Random prediction](results/vgg19/pred.png)
@@ -231,4 +228,13 @@ As with the previous run, the final validation accuracy aligns closely with the 
 **Files used in this section:**
 - Plots: [results/vgg19/run1.png](results/vgg19/run1.png), [results/vgg19/run2.png](results/vgg19/run2.png)
 - Simulations: [results/vgg19/pred.png](results/vgg19/pred.png)
+
+---
+
+## Comparison (VGG19 vs YOLOv5s-cls)
+
+- **Performance**: YOLOv5s-cls reaches ~0.95 test accuracy (both splits), while VGG19 reaches ~0.80 test accuracy (both splits).
+- **Training strategy**: VGG19 freezes the convolutional feature extractor and trains the classifier; YOLOv5s-cls fine-tunes a modern pretrained classification model end-to-end.
+- **Learning dynamics**: YOLOv5s-cls converges quickly (20 epochs) due to stronger pretrained features + fine-tuning; VGG19 improves steadily over more epochs (50) but plateaus lower.
+- **Stability**: Both models are stable across the two stratified splits (seeds 42 and 123), with small run-to-run variation.
 
