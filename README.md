@@ -3,6 +3,7 @@
 These notebooks use VGG19 and YOLOv5 to classify flower types from the Oxford Flowers-102 dataset.
 
 [YOLOv5 colab notebook link](https://colab.research.google.com/drive/1RdoSitloXBsuMJMJRj4gJ9CMuGvUFAbI)
+
 [VGG19 colab notebook link](https://colab.research.google.com/drive/1Pla7ZPSjTqdvKTGmMd9lpKiHF_fWHAXc)
 
 ## Assignment Requirements Checklist
@@ -237,4 +238,5 @@ As with the previous run, the validation and test curves remain close across epo
 - **Training strategy**: VGG19 freezes the convolutional feature extractor and trains the classifier; YOLOv5s-cls fine-tunes a modern pretrained classification model end-to-end.
 - **Learning dynamics**: YOLOv5s-cls converges quickly (20 epochs) due to stronger pretrained features + fine-tuning; VGG19 improves steadily over more epochs (50) but plateaus lower.
 - **Stability**: Both models are stable across the two stratified splits (seeds 42 and 123), with small run-to-run variation.
+
 
